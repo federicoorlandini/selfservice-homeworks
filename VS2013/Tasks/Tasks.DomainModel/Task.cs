@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Tasks.DomainModel
 {
-    public class Task : TaskEntityBase
+    public class Task : IEntity
     {
         public string Title { get; set; }
         public string Description { get; set; }

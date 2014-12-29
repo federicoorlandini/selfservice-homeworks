@@ -33,6 +33,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FluentAssertions">
+      <HintPath>..\packages\FluentAssertions.3.2.2\lib\net45\FluentAssertions.dll</HintPath>
+    </Reference>
+    <Reference Include="FluentAssertions.Core">
+      <HintPath>..\packages\FluentAssertions.3.2.2\lib\net45\FluentAssertions.Core.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Moq">
@@ -96,7 +102,6 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Controllers\TasksControllerTest.cs" />
-    <Compile Include="Controllers\ValuesControllerTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App.config" />
@@ -105,8 +110,16 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Tasks.WS\Tasks.WS.csproj">
-      <Project>{32132955-90AE-41A1-BA55-5FEC40D704AF}</Project>
+    <ProjectReference Include="..\Tasks.DomainModel\Tasks.DomainModel.csproj">
+      <Project>{03171c08-c2ac-4cd0-aeb0-0d301f222062}</Project>
+      <Name>Tasks.DomainModel</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Tasks.Infrastructure\Tasks.Infrastructure.csproj">
+      <Project>{4a70e472-1406-441a-adc8-f26d0aa011ad}</Project>
+      <Name>Tasks.Infrastructure</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Tasks.WS\Tasks.WS.csproj">
+      <Project>{32132955-90ae-41a1-ba55-5fec40d704af}</Project>
       <Name>Tasks.WS</Name>
     </ProjectReference>
   </ItemGroup>

@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Tasks.Infrastructure
+namespace Tasks.DomainModel
 {
-    public class Class1
+    public class TaskComment : IEntity
     {
+        public string CommentText { get; set; }
     }
 }

@@ -6,12 +6,11 @@ using System.Threading.Tasks;
 
 namespace Tasks.DomainModel
 {
-    public abstract class TaskEntityBase
+    public abstract class IEntity
     {
         public int ID { get; set; }
         public DateTime Created { get; set; }
 
-        public int CreatorUserID { get; set; }
         public User Creator { get; set; }
     }
 }

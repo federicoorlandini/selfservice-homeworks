@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Tasks.DomainModel
 {
-    public class WorkingSession : TaskEntityBase
+    public class WorkingSession : IEntity
     {
         public int Hours { get; set; }
         public int Minutes { get; set; }
