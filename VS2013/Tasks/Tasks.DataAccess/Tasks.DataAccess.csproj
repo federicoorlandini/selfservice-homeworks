@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{B588BDE1-A23F-46D6-B400-65A5B94BB5DA}</ProjectGuid>
+    <ProjectGuid>{5A1FE73A-53E3-40F6-9B88-7E529A5973D5}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Tasks.DataAccess.Interfaces</RootNamespace>
-    <AssemblyName>Tasks.DataAccess.Interfaces</AssemblyName>
+    <RootNamespace>Tasks.DataAccess</RootNamespace>
+    <AssemblyName>Tasks.DataAccess</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -39,6 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EntityRepository.cs" />
     <Compile Include="IEntityRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

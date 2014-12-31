@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Tasks.DataAccess.Interfaces")]
+[assembly: AssemblyTitle("UnityTestConsole")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Tasks.DataAccess.Interfaces")]
+[assembly: AssemblyProduct("UnityTestConsole")]
 [assembly: AssemblyCopyright("Copyright ©  2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("71e079dc-b7aa-4f57-bf4f-68ceb3e0961f")]
+[assembly: Guid("ffc484bf-c094-454e-9087-e73dca629999")]
 
 // Version information for an assembly consists of the following four values:
 //

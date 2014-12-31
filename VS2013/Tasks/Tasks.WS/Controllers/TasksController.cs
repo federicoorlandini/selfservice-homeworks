@@ -12,10 +12,10 @@ using AutoMapper;
 namespace Tasks.WS.Controllers
 {
     [RoutePrefix("tasks")]
-    [Authorize]
     public class TasksController : ApiController
     {
         private ITasksService _tasksService;
+
 
         public TasksController(ITasksService tasksService)
         {
@@ -34,6 +34,14 @@ namespace Tasks.WS.Controllers
             return Ok(tasksCollection);
         }
 
+        [HttpGet]
+        [Route("status/{status}")]
+        public HttpResponseMessage GetAllTasks(int status)
+        {
+            var response = Request.CreateResponse(System.Net.HttpStatusCode.NotAcceptable);
+            return response;
+        }
+        
         [HttpGet]
         [Route("{taskID}")]
         public IHttpActionResult GetTask(int taskID)

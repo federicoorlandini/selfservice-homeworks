@@ -10,6 +10,8 @@ using System.Linq;
 using System.Web.Http.Results;
 using FluentAssertions;
 using Tasks.Infrastructure;
+using System.Web.Http;
+using System.Net.Http;
 
 namespace Tasks.WS.Tests.Controllers
 {
@@ -80,7 +82,17 @@ namespace Tasks.WS.Tests.Controllers
         [TestMethod]
         public void GetAllTasks_FilteringByStatus_ShouldReturnTheCorrectTaskCollection()
         {
-            throw new NotImplementedException();
+            var config = new HttpConfiguration();
+            WebApiConfig.Register(config);
+            UnityConfig.RegisterComponents();
+            config.IncludeErrorDetailPolicy = IncludeErrorDetailPolicy.Always;
+            var server = new HttpServer(config);
+            var client = new HttpClient(server);
+            var response = client.GetAsync("http://localhost/tasks").Result;
+
+            var message = response.Content.ReadAsStringAsync().Result;
+
+            response.StatusCode.Should().Be(System.Net.HttpStatusCode.NotAcceptable);
         }
 
         [TestMethod]
@@ -164,7 +176,7 @@ namespace Tasks.WS.Tests.Controllers
 
             // Action
             var controller = new TasksController(_mockedTasksService.Object);
-            var response = controller.Add(newTaskToAdd) as OkNegotiatedContentResult<DomainModel.Task>;
+            var response = controller.Add(newTaskToAdd) as CreatedNegotiatedContentResult<DomainModel.Task>;
 
             // Assert
             response.Should().NotBeNull("because should be of type OkNegotiatedContentResult<DomainModel.Task>");
@@ -194,7 +206,7 @@ namespace Tasks.WS.Tests.Controllers
             // Act
             var controller = new TasksController(_mockedTasksService.Object);
             var response = controller.Delete(taskToDelete.ID) as OkResult;
-
+            
             // Assert
             _mockedTasksService.Verify(m => m.Delete(taskToDelete.ID));
             response.Should().NotBeNull("because should be of type OkResult");

@@ -1,6 +1,6 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Tasks.DataAccess.Interfaces;
+using Tasks.DataAccess;
 using Moq;
 using System.Collections.Generic;
 using FluentAssertions;

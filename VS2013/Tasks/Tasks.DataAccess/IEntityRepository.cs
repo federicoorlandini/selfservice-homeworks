@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Tasks.DomainModel;
 
-namespace Tasks.DataAccess.Interfaces
+namespace Tasks.DataAccess
 {
     public interface IEntityRepository<T> where T : IEntity
     {

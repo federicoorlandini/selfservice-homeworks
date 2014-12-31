@@ -1,1 +1,22 @@
-VS2013/Tasks/packages/*
+VS2013/Tasks/packages/
+VS2013/Tasks.WS/bin/
+VS2013/Tasks.WS/obj/
+VS2013/Tasks/Tasks.WS.Tests/bin/
+VS2013/Tasks/Tasks.WS.Tests/obj/
+VS2013/Tasks.Infrastructure/obj/
+VS2013/Tasks.DomainModel/obj/
+VS2013/Tasks/Tasks.WS/bin/
+VS2013/Tasks/Tasks.DomainModel/obj/
+VS2013/Tasks/Tasks.Infrastructure.Tests/bin/
+VS2013/Tasks/Tasks.WS/obj/
+VS2013/Tasks/Tasks.Infrastructure/obj/
+VS2013/Tasks/Tasks.Infrastructure.Tests/obj/
+VS2013/Tasks/Tasks.DataAccess.Interfaces/obj/
+VS2013/Tasks/UnityTestConsole/bin/
+VS2013/Tasks/UnityTestConsole/obj/Debug/TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs,VS2013/Tasks/UnityTestConsole/obj/Debug/TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs,VS2013/Tasks/UnityTestConsole/obj/Debug/TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs,VS2013/Tasks/UnityTestConsole/obj/Debug/UnityTestConsole.csproj.FileListAbsolute.txt
+VS2013/Tasks/UnityTestConsole/obj/Debug/UnityTestConsole.csproj.FileListAbsolute.txt
+VS2013/Tasks/UnityTestConsole/obj/
+VS2013/Tasks/Tasks.Infrastructure.Interfaces/obj/
+VS2013/Tasks/Tasks.DataAccess/obj/
+TODO List.txt
+functionality.txt

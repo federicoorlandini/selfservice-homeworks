@@ -65,9 +65,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Tasks.DataAccess.Interfaces\Tasks.DataAccess.Interfaces.csproj">
-      <Project>{b588bde1-a23f-46d6-b400-65a5b94bb5da}</Project>
-      <Name>Tasks.DataAccess.Interfaces</Name>
+    <ProjectReference Include="..\Tasks.DataAccess\Tasks.DataAccess.csproj">
+      <Project>{5a1fe73a-53e3-40f6-9b88-7e529a5973d5}</Project>
+      <Name>Tasks.DataAccess</Name>
     </ProjectReference>
     <ProjectReference Include="..\Tasks.DomainModel\Tasks.DomainModel.csproj">
       <Project>{03171c08-c2ac-4cd0-aeb0-0d301f222062}</Project>
