@@ -14,12 +14,12 @@ namespace Tasks.DataAccess
             throw new NotImplementedException();
         }
 
-        public void Add(T entity)
+        public IEnumerable<T> GetAll(DomainModel.TaskStatus status)
         {
             throw new NotImplementedException();
         }
 
-        public void Add(IEnumerable<T> entitiesCollection)
+        public void Add(T entity)
         {
             throw new NotImplementedException();
         }

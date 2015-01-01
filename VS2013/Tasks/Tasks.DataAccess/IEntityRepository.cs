@@ -10,8 +10,8 @@ namespace Tasks.DataAccess
     public interface IEntityRepository<T> where T : IEntity
     {
         IEnumerable<T> GetAll();
+        IEnumerable<T> GetAll(DomainModel.TaskStatus status);
         void Add(T entity);
-        void Add(IEnumerable<T> entitiesCollection);
         void Delete(T entity);
         void Update(T entity);
         T FindById(int Id);

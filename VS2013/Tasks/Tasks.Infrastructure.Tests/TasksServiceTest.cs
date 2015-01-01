@@ -72,6 +72,41 @@ namespace Tasks.Infrastructure.Tests
         }
 
         [TestMethod]
+        public void GetAll_FilteringByStatus_ShouldCallTheCorrectRepositoryMethod()
+        {
+            // Arrange
+            var status = DomainModel.TaskStatus.InProgress;
+            var inProgressTasksCollection = new List<DomainModel.Task>() { 
+                new DomainModel.Task { 
+                    ID = 1,
+                    Created = _createdDateTime, 
+                    Creator = _creatorUser, 
+                    Description = "This is the first task for our tests", 
+                    EstimatedHours = 1, 
+                    Status = DomainModel.TaskStatus.InProgress, 
+                    Title = "First task" 
+                },
+                new DomainModel.Task { 
+                    ID = 2,
+                    Created = _createdDateTime, 
+                    Creator = _creatorUser, 
+                    Description = "This is the second task for our tests", 
+                    EstimatedHours = 1, 
+                    Status = DomainModel.TaskStatus.InProgress, 
+                    Title = "Second task" 
+                }
+            };
+            _mockRepository.Setup(m => m.GetAll(status)).Returns(inProgressTasksCollection);
+
+            // Act
+            var service = new TasksService(_mockRepository.Object);
+            var result = service.GetAll(status);
+
+            // Assert
+            _mockRepository.VerifyAll();
+        }
+
+        [TestMethod]
         public void FindById_WithExistingID_ShouldReturnTheCorrectEntity()
         {
             // Arrange

@@ -12,6 +12,8 @@ namespace Tasks.WS.Models
         public string Title { get; set; }
         public string Description { get; set; }
 
+        [Required]
+        public DomainModel.TaskStatus Status { get; set; }
         public int EstimatedHours { get; set; }
         public int RemainingdHours { get; set; }
     }

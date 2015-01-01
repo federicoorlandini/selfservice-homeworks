@@ -23,11 +23,11 @@ namespace Tasks.WS.Controllers
 
             // Automapper configuration
             AutoMapper.Mapper.CreateMap<Models.NewTask, DomainModel.Task>();
-
+            AutoMapper.Mapper.CreateMap<Models.UpdateTask, DomainModel.Task>();
         }
 
         [HttpGet]
-        [Route("")]
+        [Route("", Name="GetAllTasks")]
         public IHttpActionResult GetAllTasks()
         {
             var tasksCollection = _tasksService.GetAll();
@@ -35,15 +35,16 @@ namespace Tasks.WS.Controllers
         }
 
         [HttpGet]
-        [Route("status/{status}")]
-        public HttpResponseMessage GetAllTasks(int status)
+        [Route("status/{status}", Name="GetAllTaskFilteredByStatus")]
+        public HttpResponseMessage GetAllTasks(DomainModel.TaskStatus status)
         {
-            var response = Request.CreateResponse(System.Net.HttpStatusCode.NotAcceptable);
+            var tasksCollection = _tasksService.GetAll(status);
+            var response = Request.CreateResponse(System.Net.HttpStatusCode.OK, tasksCollection);
             return response;
         }
         
         [HttpGet]
-        [Route("{taskID}")]
+        [Route("{taskID}", Name="GetTaskById")]
         public IHttpActionResult GetTask(int taskID)
         {
             var task = _tasksService.FindById(taskID);
@@ -58,32 +59,62 @@ namespace Tasks.WS.Controllers
         }
 
         [HttpPost]
-        [Route("")]
+        [Route("", Name="AddNewTask")]
         public IHttpActionResult Add(NewTask model)
         {
             try
             {
-                var newTask = Mapper.Map<Models.NewTask, DomainModel.Task>(model);
-                newTask = _tasksService.Add(newTask);
-                return Ok(newTask);
+                if( ModelState.IsValid)
+                {
+                    var newTask = Mapper.Map<Models.NewTask, DomainModel.Task>(model);
+                    newTask = _tasksService.Add(newTask);
+                    string location = Url.Link("GetTaskById", new { taskID = newTask.ID });
+                    return Created(location, newTask);
+                }
+                else
+                {
+                    return BadRequest();
+                }
             }
             catch(InvalidEntityException<DomainModel.Task>)
             {
+                // There can be some other business rules that make the new task not valid
                 return BadRequest();
             }
         }
 
         [HttpPut]
-        [Route("{taskID}")]
-        public IHttpActionResult Update([FromUri] int taskID, [FromBody] UpdateTask model)
+        [Route("{taskID}", Name="UpdateTask")]
+        public IHttpActionResult Update(int taskID, UpdateTask model)
         {
-            // TODO - Add the logic here
-            return Ok();
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    var taskToUpdate = Mapper.Map<Models.UpdateTask, DomainModel.Task>(model);
+                    taskToUpdate.ID = taskID;
+                    var updatedTask = _tasksService.Update(taskToUpdate);
+                    return Ok(updatedTask);
+                }
+                else
+                {
+                    return BadRequest();
+                }
+            }
+            catch (InvalidEntityException<DomainModel.Task>)
+            {
+                // There can be some other business rules that make the new task not valid
+                return BadRequest();
+            }
+            catch(NotFoundEntityException<DomainModel.Task>)
+            {
+                return NotFound();
+            }
         }
 
         [HttpDelete]
         [Route("{taskID}")]
-        public IHttpActionResult Delete([FromUri] int taskID)
+        public IHttpActionResult Delete(int taskID)
         {
             try
             {

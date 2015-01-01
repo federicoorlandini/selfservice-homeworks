@@ -22,6 +22,11 @@ namespace Tasks.Infrastructure.Tasks
             return _taskRepository.GetAll();
         }
 
+        public IEnumerable<DomainModel.Task> GetAll(DomainModel.TaskStatus status)
+        {
+            return _taskRepository.GetAll(status);
+        }
+
         public DomainModel.Task FindById(int ID)
         {
             return _taskRepository.FindById(ID);
@@ -30,6 +35,11 @@ namespace Tasks.Infrastructure.Tasks
         public DomainModel.Task Add(DomainModel.Task task)
         {
             return null;
+        }
+
+        public DomainModel.Task Update(DomainModel.Task task)
+        {
+            return task;
         }
 
         public bool Delete(int ID)

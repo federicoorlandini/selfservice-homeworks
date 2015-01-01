@@ -12,6 +12,11 @@ using FluentAssertions;
 using Tasks.Infrastructure;
 using System.Web.Http;
 using System.Net.Http;
+using Tasks.DataAccess;
+using Tasks.WS.Lib;
+using Microsoft.Practices.Unity;
+using Newtonsoft.Json;
+using System.Net;
 
 namespace Tasks.WS.Tests.Controllers
 {
@@ -76,23 +81,30 @@ namespace Tasks.WS.Tests.Controllers
             // Assert
             response.Should().NotBeNull();
             _mockedTasksService.VerifyAll();
-            response.Content.ShouldBeEquivalentTo(_tasksCollection);
+            response.Content.ShouldAllBeEquivalentTo(_tasksCollection);
         }
 
         [TestMethod]
         public void GetAllTasks_FilteringByStatus_ShouldReturnTheCorrectTaskCollection()
         {
-            var config = new HttpConfiguration();
-            WebApiConfig.Register(config);
-            UnityConfig.RegisterComponents();
-            config.IncludeErrorDetailPolicy = IncludeErrorDetailPolicy.Always;
-            var server = new HttpServer(config);
-            var client = new HttpClient(server);
-            var response = client.GetAsync("http://localhost/tasks").Result;
+            // The mocked Task Repository
+            var taskStatus = DomainModel.TaskStatus.NotStarted;
+            var mockedRepository = new Mock<IEntityRepository<DomainModel.Task>>();
+            mockedRepository.Setup(m => m.GetAll(taskStatus)).Returns(_tasksCollection);
 
-            var message = response.Content.ReadAsStringAsync().Result;
+            // Preparing the in-memory test
+            var client = ConfigureInMemoryTest(tasksRepository: mockedRepository.Object);
+            var url = string.Format("http://localhost/tasks/status/{0}", (int)taskStatus);
 
-            response.StatusCode.Should().Be(System.Net.HttpStatusCode.NotAcceptable);
+            // Act
+            var response = client.GetAsync(url).Result;
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var content = response.Content.ReadAsStringAsync().Result;
+            var objectInContent = JsonConvert.DeserializeObject<List<DomainModel.Task>>(content);
+            objectInContent.ShouldAllBeEquivalentTo(_tasksCollection, "because the collection in the result should be the same that the repository returned");
+            _mockedTasksService.VerifyAll();
         }
 
         [TestMethod]
@@ -106,11 +118,10 @@ namespace Tasks.WS.Tests.Controllers
             var controller = new TasksController(_mockedTasksService.Object);
             var response = controller.GetTask(taskToReturn.ID) as OkNegotiatedContentResult<DomainModel.Task>;
 
-
             // Assert
             response.Should().NotBeNull("because the response should be of type OkNegotiatedContentResult<DomainModel.Task>");
             _mockedTasksService.VerifyAll();
-            response.Content.Should().BeSameAs(taskToReturn, "Because the response should contains the correct task");
+            response.Content.ShouldBeEquivalentTo(taskToReturn, "Because the response should contains the correct task");
         }
         
         [TestMethod]
@@ -151,7 +162,7 @@ namespace Tasks.WS.Tests.Controllers
         }
 
         [TestMethod]
-        public void Add_ValidTask_ShouldReturnOkAndTheJSonWithTheNewTask()
+        public void Add_ValidTask_ShouldReturnCreatedAndTheJSonWithTheNewTask()
         {
             // Arrange
             var newTaskToAdd = new Models.NewTask
@@ -174,26 +185,75 @@ namespace Tasks.WS.Tests.Controllers
             
             _mockedTasksService.Setup(m => m.Add(It.IsAny<DomainModel.Task>())).Returns(taskAdded);
 
+            var client = ConfigureInMemoryTest(tasksService: _mockedTasksService.Object);
+
             // Action
-            var controller = new TasksController(_mockedTasksService.Object);
-            var response = controller.Add(newTaskToAdd) as CreatedNegotiatedContentResult<DomainModel.Task>;
+            var response = client.PostAsJsonAsync("http://localhost/tasks", newTaskToAdd).Result;
 
             // Assert
-            response.Should().NotBeNull("because should be of type OkNegotiatedContentResult<DomainModel.Task>");
-            response.Content.Should().BeOfType<DomainModel.Task>();
-            response.Content.Should().BeSameAs(taskAdded);
+            response.StatusCode.Should().Be(HttpStatusCode.Created, "because should return a created code");
+            var content = response.Content.ReadAsAsync<DomainModel.Task>().Result;
+            content.ShouldBeEquivalentTo(taskAdded, "because the action should return the DomainModel.Task added");
         }
 
         [TestMethod]
         public void Update_ExistingTask_ShouldReturnOk()
         {
-            throw new NotImplementedException();
+            // Arrange
+            const int taskToUpdateID = 1;
+            
+            var taskToUpdate = new Models.UpdateTask() {
+                Description = "An updated description", 
+                EstimatedHours = 10, 
+                RemainingdHours = 10, 
+                Title = "A task to update",
+                Status = DomainModel.TaskStatus.InProgress
+            };
+
+            var updatedTask = new DomainModel.Task() {
+                ID = taskToUpdateID, 
+                Created = _createdDateTime, 
+                Creator = _creatorUser, 
+                Description = taskToUpdate.Description, 
+                EstimatedHours = taskToUpdate.EstimatedHours, 
+                Status = taskToUpdate.Status, 
+                Title = taskToUpdate.Title
+            };
+
+            _mockedTasksService.Setup(m => m.Update(It.Is<DomainModel.Task>(t => t.ID == taskToUpdateID))).Returns(updatedTask);
+
+            // Act
+            var controller = new TasksController(_mockedTasksService.Object);
+            var response = controller.Update(taskToUpdateID, taskToUpdate) as OkNegotiatedContentResult<DomainModel.Task>;
+
+            // Assert
+            response.Should().NotBeNull("because the response should be an OK status code");
+            _mockedTasksService.VerifyAll();
         }
 
         [TestMethod]
         public void Update_NotExistingTask_ShouldReturnNotFoundError()
-        {
-            throw new NotImplementedException();
+        {// Arrange
+            const int notExistingTaskID = 1;
+
+            var notExistingTask = new Models.UpdateTask()
+            {
+                Description = "An updated description",
+                EstimatedHours = 10,
+                RemainingdHours = 10,
+                Title = "A task to update",
+                Status = DomainModel.TaskStatus.InProgress
+            };
+
+            _mockedTasksService.Setup(m => m.Update(It.Is<DomainModel.Task>(t => t.ID == notExistingTaskID))).Throws(new NotFoundEntityException<DomainModel.Task>());
+
+            // Act
+            var controller = new TasksController(_mockedTasksService.Object);
+            var response = controller.Update(notExistingTaskID, notExistingTask) as NotFoundResult;
+
+            // Assert
+            response.Should().NotBeNull("because the response should be an NotFound status code");
+            _mockedTasksService.VerifyAll();
         }
 
         [TestMethod]
@@ -227,5 +287,41 @@ namespace Tasks.WS.Tests.Controllers
             // Assert
             response.Should().NotBeNull("because should be of type NotFoundResult");
         }
+
+        #region Helper Methods
+        /// <summary>
+        /// This method onfigure the in-memory hosting for the integration tests
+        /// </summary>
+        /// <param name="tasksService"></param>
+        /// <param name="tasksRepository"></param>
+        /// <returns></returns>
+        private HttpClient ConfigureInMemoryTest(ITasksService tasksService = null, IEntityRepository<DomainModel.Task> tasksRepository = null)
+        {
+            var config = new HttpConfiguration();
+            WebApiConfig.Register(config);
+
+            // Overwriting the IoC configuration to inject the mocked repository
+            var container = new UnityContainer();
+            if( tasksRepository != null)
+            {
+                container.RegisterInstance<IEntityRepository<DomainModel.Task>>(tasksRepository);
+            }
+            
+            if( tasksService == null )
+            {
+                container.RegisterType<ITasksService, TasksService>();
+            }
+            else
+            {
+                container.RegisterInstance<ITasksService>(tasksService);
+            }
+            
+            config.DependencyResolver = new UnityResolver(container);
+
+            var server = new HttpServer(config);
+            return new HttpClient(server);
+        }
+
+        #endregion
     }
 }
