@@ -1,39 +1,88 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<ClassDiagram MajorVersion="1" MinorVersion="1">
-  <Class Name="Tasks.DomainModel.TaskEntityBase">
-    <Position X="4.25" Y="1.75" Width="1.5" />
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="NameAndType">
+  <Comment CommentText="The watcher users are users that follow the task and that will receive email notifications  when someone write a comment in the task or add a worked session to the task.">
+    <Position X="0.667" Y="1.885" Height="0.812" Width="2.512" />
+  </Comment>
+  <Class Name="Tasks.DomainModel.IEntity">
+    <Position X="8.75" Y="1.75" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAgAAAAAAAAAAAAAAAAAQAEAAAAQAAAAA=</HashCode>
-      <FileName>TaskEntityBase.cs</FileName>
+      <HashCode>AAAAAAAAAAAAgAAAAAAAAAAAAAAAAAQAEAAAAAAAAAA=</HashCode>
+      <FileName>IEntity.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Creator" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="Tasks.DomainModel.Task">
+    <Position X="4.5" Y="4.5" Width="3.5" />
+    <AssociationLine Name="Comments" Type="Tasks.DomainModel.TaskComment">
+      <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
+        <Position X="0.141" Y="0.06" Height="0.16" Width="2.881" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="WorkSessions" Type="Tasks.DomainModel.WorkSession" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="8" Y="5.629" />
+        <Point X="8.375" Y="5.629" />
+        <Point X="8.375" Y="7.562" />
+        <Point X="11.5" Y="7.562" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAEAgAgAEACAAAAAAAAAAAAAAAACAAAgAAAIAA=</HashCode>
+      <FileName>Task.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Status" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Property Name="Comments" />
+      <Property Name="WorkSessions" />
+      <Property Name="WatcherUsers" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="Tasks.DomainModel.User">
+    <Position X="4" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAQAAAAgAAAAAAAAAAAAAAgAAAAA=</HashCode>
+      <FileName>User.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Tasks.DomainModel.TaskComment">
-    <Position X="2.25" Y="4.5" Width="1.5" />
+    <Position X="12" Y="4" Width="2" />
     <TypeIdentifier>
       <HashCode>AAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>TaskComment.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Tasks.DomainModel.Task">
-    <Position X="4.5" Y="4.5" Width="1.5" />
+  <Class Name="Tasks.DomainModel.WorkSession">
+    <Position X="11.5" Y="6.75" Width="3.25" />
     <TypeIdentifier>
-      <HashCode>AAAAQAAEAgAgAEAAAAAAAAAAAAAAAAAAAAAAAAgAIAA=</HashCode>
-      <FileName>Task.cs</FileName>
+      <HashCode>AAAAAAAAAAAQAAAAQAAAAAAAAAAAAAABAAABAAAAAAA=</HashCode>
+      <FileName>WorkSession.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Tasks.DomainModel.User">
-    <Position X="7.75" Y="1.5" Width="1.5" />
+  <Class Name="Tasks.DomainModel.Subtask">
+    <Position X="5.5" Y="7.5" Width="1.5" />
+    <AssociationLine Name="ParentTask" Type="Tasks.DomainModel.Task">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="-0.911" Y="1.195" />
+      </MemberNameLabel>
+    </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAQAAAAgAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>User.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Subtask.cs</FileName>
     </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="ParentTask" />
+    </ShowAsAssociation>
   </Class>
-  <Class Name="Tasks.DomainModel.WorkingSession">
-    <Position X="6.75" Y="4.5" Width="1.5" />
+  <Enum Name="Tasks.DomainModel.TaskStatus">
+    <Position X="1.25" Y="4.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAQAAAAQAAAAAAAAAAAAAAAAAABAAAAAAA=</HashCode>
-      <FileName>WorkingSession.cs</FileName>
+      <HashCode>AQAAQAAAAIAgAAAAAAAAAAAAAAAAAAQAAAAAABAAAAA=</HashCode>
+      <FileName>TaksStatus.cs</FileName>
     </TypeIdentifier>
-  </Class>
+  </Enum>
   <Font Name="Tahoma" Size="8.25" />
 </ClassDiagram>

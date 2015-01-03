@@ -39,13 +39,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Subtask.cs" />
     <Compile Include="TaksStatus.cs" />
     <Compile Include="Task.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TaskComment.cs" />
     <Compile Include="IEntity.cs" />
     <Compile Include="User.cs" />
-    <Compile Include="WorkingSession.cs" />
+    <Compile Include="WorkSession.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="DomainModel.cd" />

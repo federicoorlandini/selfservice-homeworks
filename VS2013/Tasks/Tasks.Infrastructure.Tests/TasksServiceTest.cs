@@ -138,5 +138,68 @@ namespace Tasks.Infrastructure.Tests
             result.Should().BeNull();
             _mockRepository.VerifyAll();
         }
+
+        [TestMethod]
+        public void Add_ValidEntity_ShouldAddTheEntityToTheRepository()
+        {
+            throw new NotImplementedException();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidEntityException<DomainModel.Task>))]
+        public void Add_NotValidEntity_ShouldThrowAnInvalidEntityException()
+        {
+            throw new NotImplementedException();
+        }
+
+        [TestMethod]
+        public void Update_ValidEntity_ShouldUpdateTheEntityInTheRepository()
+        {
+            throw new NotImplementedException();
+        }
+
+        [TestMethod]
+        public void Update_ValidEntity_ShouldSendTheNotificationsToAllTheWatchers()
+        {
+            throw new NotImplementedException();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidEntityException<DomainModel.Task>))]
+        public void Update_NotValidEntity_ShouldThrowAnInvalidEntityException()
+        {
+            throw new NotImplementedException();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidEntityException<DomainModel.Task>))]
+        public void Update_NotValidEntity_ShouldNotSendTheNotificationsToTheWatchers()
+        {
+            throw new NotImplementedException();
+        }
+
+        [TestMethod]
+        public void Delete_ExistingEntity_ShouldDeleteTheEntityFromTheRepository()
+        {
+            throw new NotImplementedException();
+        }
+
+        [TestMethod]
+        public void Delete_ExistingEntity_ShouldShouldSendTheNotificationsToAllTheWatchers()
+        {
+            throw new NotImplementedException();
+        }
+
+        [TestMethod]
+        public void Delete_NotExistingEntity_ShouldLeaveUnchangedTheEntitiesInTheRepository()
+        {
+            throw new NotImplementedException();
+        }
+
+        [TestMethod]
+        public void Delete_NotExistingEntity_ShouldNotSendNotifications()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

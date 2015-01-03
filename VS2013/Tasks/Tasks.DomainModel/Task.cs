@@ -15,9 +15,23 @@ namespace Tasks.DomainModel
 
         public int EstimatedHours { get; set; }
 
-        public IEnumerable<WorkingSession> WorkingSessions { get; set; }
+        public IEnumerable<WorkSession> WorkSessions { get; set; }
         public IEnumerable<TaskComment> Comments { get; set; }
 
-        public int WorkedHours { get; set; }
+        /// <summary>
+        /// Return the total logged work session for this task
+        /// </summary>
+        public double TotalWorkedHours {
+            get 
+            { 
+                return (WorkSessions == null ? 0 : WorkSessions.Select(item => new TimeSpan(item.Hours, item.Minutes, item.Seconds)).Sum(item => item.TotalHours)); 
+            }
+        }
+
+        public IEnumerable<User> WatcherUsers
+        {
+            get;
+            set;
+        }
     }
 }

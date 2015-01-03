@@ -17,6 +17,7 @@ using Tasks.WS.Lib;
 using Microsoft.Practices.Unity;
 using Newtonsoft.Json;
 using System.Net;
+using System.Web.Http.ExceptionHandling;
 
 namespace Tasks.WS.Tests.Controllers
 {
@@ -24,6 +25,7 @@ namespace Tasks.WS.Tests.Controllers
     public class TasksControllerTest
     {
         private Mock<ITasksService> _mockedTasksService;
+        private Mock<IExceptionLogger> _mockedExceptionLogger;
 
         private DomainModel.User _creatorUser;
         private DateTime _createdDateTime;
@@ -33,6 +35,7 @@ namespace Tasks.WS.Tests.Controllers
         public void TestInitialize()
         {
             _mockedTasksService = new Mock<ITasksService>();
+            _mockedExceptionLogger = new Mock<IExceptionLogger>();
 
             _creatorUser = new DomainModel.User { UserID = 1, Username = "federico.orlandini" };
             _createdDateTime = new DateTime(2014, 12, 25);
@@ -317,6 +320,9 @@ namespace Tasks.WS.Tests.Controllers
             }
             
             config.DependencyResolver = new UnityResolver(container);
+
+            // Removing the log service
+            config.Services.Replace(typeof(IExceptionLogger), _mockedExceptionLogger);
 
             var server = new HttpServer(config);
             return new HttpClient(server);

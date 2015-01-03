@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
+using System.Web.Http.ExceptionHandling;
 using Tasks.DataAccess;
 using Tasks.Infrastructure.Tasks;
 using Tasks.WS.Lib;
@@ -14,10 +15,14 @@ namespace Tasks.WS
         public static void Register(HttpConfiguration config)
         {
             // Web API configuration and services
+            // Unity configuration
             var container = new UnityContainer();
             container.RegisterType(typeof(IEntityRepository<>), typeof(EntityRepository<>));
             container.RegisterType<ITasksService, TasksService>();
             config.DependencyResolver = new UnityResolver(container);
+
+            // enable elmah
+            config.Services.Add(typeof(IExceptionLogger), new Log4NetExceptionLogger());
 
             // Web API routes
             config.MapHttpAttributeRoutes();
