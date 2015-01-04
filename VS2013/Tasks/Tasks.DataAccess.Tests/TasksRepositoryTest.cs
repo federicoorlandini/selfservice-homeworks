@@ -12,7 +12,7 @@ namespace Tasks.DataAccess.Tests
     public class TasksRepositoryTest
     {
         private DomainModel.User _creatorUser;
-        private List<DomainModel.Task> _tasks;
+        private IDictionary<int, DomainModel.Task> _tasks;
 
         [TestInitialize]
         public void InitializeTest()
@@ -23,9 +23,9 @@ namespace Tasks.DataAccess.Tests
                 Username = "federico.orlandini"
             };
 
-            _tasks = new List<DomainModel.Task>()
+            _tasks = new Dictionary<int, DomainModel.Task>()
             {
-                new DomainModel.Task { 
+                { 1, new DomainModel.Task { 
                     ID = 1,
                     Created = new DateTime(2014, 12, 25), 
                     Creator = _creatorUser, 
@@ -33,8 +33,8 @@ namespace Tasks.DataAccess.Tests
                     EstimatedHours = 1, 
                     Status = DomainModel.TaskStatus.NotStarted, 
                     Title = "First task" 
-                },
-                new DomainModel.Task { 
+                }},
+                { 2, new DomainModel.Task { 
                     ID = 2,
                     Created = new DateTime(2014, 12, 27), 
                     Creator = _creatorUser, 
@@ -42,8 +42,8 @@ namespace Tasks.DataAccess.Tests
                     EstimatedHours = 1, 
                     Status = DomainModel.TaskStatus.InProgress, 
                     Title = "Second task" 
-                },
-                new DomainModel.Task { 
+                }},
+                { 3, new DomainModel.Task { 
                     ID = 3,
                     Created = new DateTime(2015, 1, 1), 
                     Creator = _creatorUser, 
@@ -51,10 +51,8 @@ namespace Tasks.DataAccess.Tests
                     EstimatedHours = 1, 
                     Status = DomainModel.TaskStatus.NotStarted, 
                     Title = "Third task" 
-                }
-
+                }}
             };
-
         }
         
         [TestMethod]
@@ -99,7 +97,7 @@ namespace Tasks.DataAccess.Tests
             repository.Add(taskToAdd);
 
             // Assert
-            _tasks.Should().Contain(taskToAdd, "because the new entity should have been added to the repository");
+            _tasks.Values.Should().Contain(taskToAdd, "because the new entity should have been added to the repository");
         }
 
         [TestMethod]
@@ -132,7 +130,7 @@ namespace Tasks.DataAccess.Tests
             repository.Delete(taskToDelete);
 
             // Assert
-            _tasks.Should().NotContain(taskToDelete, "because the entity should be removed from the collection");
+            _tasks.Values.Should().NotContain(taskToDelete, "because the entity should be removed from the collection");
         }
 
         [TestMethod]
@@ -172,7 +170,7 @@ namespace Tasks.DataAccess.Tests
             repository.Update(taskToUpdate);
 
             // Assert
-            var entityInCollection = _tasks.SingleOrDefault(t => t.ID == taskToUpdate.ID);
+            var entityInCollection = _tasks[taskToUpdate.ID];
             entityInCollection.Should().NotBeNull("because the entity should be in the collection").And.ShouldBeEquivalentTo(taskToUpdate, opt => opt.ExcludingMissingProperties(), "because the update should update all the properties in the entity");
         }
 

@@ -9,34 +9,34 @@ namespace Tasks.DataAccess.Tasks
 {
     public class TasksRepository : IEntityRepository<DomainModel.Task>
     {
-        private ICollection<DomainModel.Task> _tasksCollection;
+        private IDictionary<int, DomainModel.Task> _tasksCollection;
 
         public TasksRepository()
         {
             // This contructor should initialize a database connection to retrieve the Tasks
         }
 
-        public TasksRepository(ICollection<DomainModel.Task> tasksCollection)
+        public TasksRepository(IDictionary<int, DomainModel.Task> tasksCollection)
         {
             _tasksCollection = tasksCollection;
         }
 
         public IEnumerable<DomainModel.Task> GetAll()
         {
-            return _tasksCollection;
+            return _tasksCollection.Values;
         }
 
         public IEnumerable<DomainModel.Task> GetAll(DomainModel.TaskStatus status)
         {
-            return _tasksCollection.Where(t => t.Status == status);
+            return _tasksCollection.Where(t => t.Value.Status == status).Select(t => t.Value);
         }
 
         public void Add(DomainModel.Task entity)
         {
             // This is a very simple way to generate the new ID. This should be provided by the database
-            var newID = _tasksCollection.Max(t => t.ID) + 1;
+            var newID = _tasksCollection.Values.Max(t => t.ID) + 1;
             entity.ID = newID;
-            _tasksCollection.Add(entity);
+            _tasksCollection[newID] = entity;
         }
 
         public void Delete(DomainModel.Task entity)
@@ -44,7 +44,7 @@ namespace Tasks.DataAccess.Tasks
             var entityInCollection = FindById(entity.ID);
             if( entityInCollection != null )
             {
-                _tasksCollection.Remove(entityInCollection);
+                _tasksCollection.Remove(entity.ID);
             }
         }
 
@@ -60,7 +60,9 @@ namespace Tasks.DataAccess.Tasks
 
         public DomainModel.Task FindById(int Id)
         {
-            return _tasksCollection.SingleOrDefault(t => t.ID == Id);
+            DomainModel.Task task;
+            var found = _tasksCollection.TryGetValue(Id, out task);
+            return (found ? task : null);
         }
     }
 }

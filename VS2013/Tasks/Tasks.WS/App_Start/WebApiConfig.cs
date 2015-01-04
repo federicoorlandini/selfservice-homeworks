@@ -17,7 +17,7 @@ namespace Tasks.WS
             // Web API configuration and services
             // Unity configuration
             var container = new UnityContainer();
-            container.RegisterType(typeof(IEntityRepository<>), typeof(EntityRepository<>));
+            container.RegisterType(typeof(IEntityRepository<DomainModel.Task>), typeof(DataAccess.Tasks.TasksRepository), new InjectionConstructor());
             container.RegisterType<ITasksService, TasksService>();
             config.DependencyResolver = new UnityResolver(container);
 

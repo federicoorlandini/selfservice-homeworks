@@ -321,8 +321,8 @@ namespace Tasks.WS.Tests.Controllers
             
             config.DependencyResolver = new UnityResolver(container);
 
-            // Removing the log service
-            config.Services.Replace(typeof(IExceptionLogger), _mockedExceptionLogger);
+            // Replacing the log service with a mocked one
+            config.Services.Replace(typeof(IExceptionLogger), _mockedExceptionLogger.Object);
 
             var server = new HttpServer(config);
             return new HttpClient(server);
