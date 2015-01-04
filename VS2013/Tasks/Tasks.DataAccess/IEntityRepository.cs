@@ -7,7 +7,7 @@ using Tasks.DomainModel;
 
 namespace Tasks.DataAccess
 {
-    public interface IEntityRepository<T> where T : IEntity
+    public interface IEntityRepository<T> where T : EntityBase
     {
         IEnumerable<T> GetAll();
         IEnumerable<T> GetAll(DomainModel.TaskStatus status);

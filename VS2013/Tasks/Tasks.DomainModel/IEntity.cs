@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace Tasks.DomainModel
 {
-    public abstract class IEntity
+    public interface IEntity
     {
-        public int ID { get; set; }
-        public DateTime Created { get; set; }
+        int ID { get; set; }
+        DateTime Created { get; set; }
 
-        public User Creator { get; set; }
+        User Creator { get; set; }
     }
 }

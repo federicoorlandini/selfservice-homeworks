@@ -5,6 +5,8 @@ using Moq;
 using System.Collections.Generic;
 using FluentAssertions;
 using Tasks.Infrastructure.Tasks;
+using Tasks.Infrastructure.Validators;
+using System.Linq;
 
 namespace Tasks.Infrastructure.Tests
 {
@@ -12,47 +14,51 @@ namespace Tasks.Infrastructure.Tests
     public class TasksServiceTest
     {
         private Mock<IEntityRepository<DomainModel.Task>> _mockRepository;
+        private Mock<IDomainEntityValidator<DomainModel.Task>> _mockValidator;
 
         private DomainModel.User _creatorUser;
         private DateTime _createdDateTime;
-        private List<DomainModel.Task> _tasksCollection;
+        private Dictionary<int, DomainModel.Task> _tasksCollection;
 
         [TestInitialize]
         public void TestInitialize()
         {
             _mockRepository = new Mock<IEntityRepository<DomainModel.Task>>();
+            _mockValidator = new Mock<IDomainEntityValidator<DomainModel.Task>>();
 
             _creatorUser = new DomainModel.User { UserID = 1, Username = "federico.orlandini" };
             _createdDateTime = new DateTime(2014, 12, 25);
 
-            _tasksCollection = new List<DomainModel.Task> { 
-                new DomainModel.Task { 
+
+            _tasksCollection = new Dictionary<int, DomainModel.Task>() 
+            { 
+                { 1, new DomainModel.Task { 
                     ID = 1,
-                    Created = _createdDateTime, 
+                    Created = new DateTime(2014, 12, 25), 
                     Creator = _creatorUser, 
-                    Description = "This is the first task for our tests", 
+                    Description = "This is the first task for our tests - Not Started", 
                     EstimatedHours = 1, 
                     Status = DomainModel.TaskStatus.NotStarted, 
                     Title = "First task" 
-                },
-                new DomainModel.Task { 
+                }},
+                { 2, new DomainModel.Task { 
                     ID = 2,
-                    Created = _createdDateTime, 
+                    Created = new DateTime(2014, 12, 27), 
                     Creator = _creatorUser, 
-                    Description = "This is the second task for our tests", 
+                    Description = "This is the second task for our tests - In Progress", 
                     EstimatedHours = 1, 
-                    Status = DomainModel.TaskStatus.NotStarted, 
+                    Status = DomainModel.TaskStatus.InProgress, 
                     Title = "Second task" 
-                },
-                new DomainModel.Task { 
+                }},
+                { 3, new DomainModel.Task { 
                     ID = 3,
-                    Created = _createdDateTime, 
+                    Created = new DateTime(2015, 1, 1), 
                     Creator = _creatorUser, 
-                    Description = "This is the third task for our tests", 
+                    Description = "This is the third task for our tests - Not Started", 
                     EstimatedHours = 1, 
                     Status = DomainModel.TaskStatus.NotStarted, 
                     Title = "Third task" 
-                }
+                }}
             };
         }
 
@@ -60,14 +66,14 @@ namespace Tasks.Infrastructure.Tests
         public void GetAll_SimpleCall_ShouldReturnAllTheTaskEntities()
         {
             // Arrange
-            _mockRepository.Setup(m => m.GetAll()).Returns(_tasksCollection);
+            _mockRepository.Setup(m => m.GetAll()).Returns(_tasksCollection.Values);
 
             // Act
-            var service =  new TasksService(_mockRepository.Object);
+            var service =  new TasksService(_mockRepository.Object, _mockValidator.Object);
             var result = service.GetAll();
 
             // Assert
-            result.ShouldBeEquivalentTo(_tasksCollection);
+            result.ShouldBeEquivalentTo(_tasksCollection.Values);
             _mockRepository.VerifyAll();
         }
 
@@ -99,7 +105,7 @@ namespace Tasks.Infrastructure.Tests
             _mockRepository.Setup(m => m.GetAll(status)).Returns(inProgressTasksCollection);
 
             // Act
-            var service = new TasksService(_mockRepository.Object);
+            var service = new TasksService(_mockRepository.Object, _mockValidator.Object);
             var result = service.GetAll(status);
 
             // Assert
@@ -110,11 +116,11 @@ namespace Tasks.Infrastructure.Tests
         public void FindById_WithExistingID_ShouldReturnTheCorrectEntity()
         {
             // Arrange
-            var taskToFind = _tasksCollection[0];
+            var taskToFind = _tasksCollection.First().Value;
             _mockRepository.Setup(m => m.FindById(taskToFind.ID)).Returns(taskToFind);
 
             // Act
-            var service =  new TasksService(_mockRepository.Object);
+            var service = new TasksService(_mockRepository.Object, _mockValidator.Object);
             var result = service.FindById(taskToFind.ID);
 
             // Assert
@@ -131,7 +137,7 @@ namespace Tasks.Infrastructure.Tests
             _mockRepository.Setup(m => m.FindById(taskToFindId)).Returns<DomainModel.Task>(null);
 
             // Act
-            var service = new TasksService(_mockRepository.Object);
+            var service = new TasksService(_mockRepository.Object, _mockValidator.Object);
             var result = service.FindById(taskToFindId);
 
             // Assert
@@ -142,14 +148,33 @@ namespace Tasks.Infrastructure.Tests
         [TestMethod]
         public void Add_ValidEntity_ShouldAddTheEntityToTheRepository()
         {
-            throw new NotImplementedException();
+            // Arrange
+            var taskToBeAdded = new DomainModel.Task();
+            _mockValidator.Setup(m => m.Validate(taskToBeAdded)).Returns(true);
+            _mockRepository.Setup(m => m.Add(taskToBeAdded)).Verifiable();
+
+            // Act
+            var service = new TasksService(_mockRepository.Object, _mockValidator.Object);
+            service.Add(taskToBeAdded);
+
+            // Assert
+            _mockRepository.VerifyAll();
         }
 
         [TestMethod]
         [ExpectedException(typeof(InvalidEntityException<DomainModel.Task>))]
         public void Add_NotValidEntity_ShouldThrowAnInvalidEntityException()
         {
-            throw new NotImplementedException();
+            // Arrange
+            var taskToBeAdded = new DomainModel.Task();
+            _mockValidator.Setup(m => m.Validate(taskToBeAdded)).Returns(false);
+
+            // Act
+            var service = new TasksService(_mockRepository.Object, _mockValidator.Object);
+            service.Add(taskToBeAdded);
+
+            // Assert
+            Assert.Fail("Should not reah this line of code");
         }
 
         [TestMethod]

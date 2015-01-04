@@ -6,6 +6,7 @@ using System.Web.Http;
 using System.Web.Http.ExceptionHandling;
 using Tasks.DataAccess;
 using Tasks.Infrastructure.Tasks;
+using Tasks.Infrastructure.Validators;
 using Tasks.WS.Lib;
 
 namespace Tasks.WS
@@ -19,6 +20,7 @@ namespace Tasks.WS
             var container = new UnityContainer();
             container.RegisterType(typeof(IEntityRepository<DomainModel.Task>), typeof(DataAccess.Tasks.TasksRepository), new InjectionConstructor());
             container.RegisterType<ITasksService, TasksService>();
+            container.RegisterType<IDomainEntityValidator<DomainModel.Task>, DomainEntityValidator<DomainModel.Task>>();
             config.DependencyResolver = new UnityResolver(container);
 
             // enable elmah

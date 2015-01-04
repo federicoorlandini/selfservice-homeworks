@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Tasks.DomainModel
 {
-    public class Task : IEntity
+    public class Task : EntityBase, IEntity
     {
+        [Required]
         public string Title { get; set; }
         public string Description { get; set; }
 

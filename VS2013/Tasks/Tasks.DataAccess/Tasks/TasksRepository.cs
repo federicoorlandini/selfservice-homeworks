@@ -14,6 +14,8 @@ namespace Tasks.DataAccess.Tasks
         public TasksRepository()
         {
             // This contructor should initialize a database connection to retrieve the Tasks
+            // In this case, we are using a simple in-memory collection
+            _tasksCollection = new Dictionary<int, DomainModel.Task>();
         }
 
         public TasksRepository(IDictionary<int, DomainModel.Task> tasksCollection)

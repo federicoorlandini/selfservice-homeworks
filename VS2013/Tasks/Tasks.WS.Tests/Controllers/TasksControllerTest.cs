@@ -18,6 +18,7 @@ using Microsoft.Practices.Unity;
 using Newtonsoft.Json;
 using System.Net;
 using System.Web.Http.ExceptionHandling;
+using Tasks.Infrastructure.Validators;
 
 namespace Tasks.WS.Tests.Controllers
 {
@@ -298,7 +299,7 @@ namespace Tasks.WS.Tests.Controllers
         /// <param name="tasksService"></param>
         /// <param name="tasksRepository"></param>
         /// <returns></returns>
-        private HttpClient ConfigureInMemoryTest(ITasksService tasksService = null, IEntityRepository<DomainModel.Task> tasksRepository = null)
+        private HttpClient ConfigureInMemoryTest(ITasksService tasksService = null, IEntityRepository<DomainModel.Task> tasksRepository = null, IDomainEntityValidator<DomainModel.Task> taskValidator = null)
         {
             var config = new HttpConfiguration();
             WebApiConfig.Register(config);
@@ -319,6 +320,15 @@ namespace Tasks.WS.Tests.Controllers
                 container.RegisterInstance<ITasksService>(tasksService);
             }
             
+            if( taskValidator != null )
+            {
+                container.RegisterInstance<IDomainEntityValidator<DomainModel.Task>>(taskValidator);
+            }
+            else
+            {
+                container.RegisterType<IDomainEntityValidator<DomainModel.Task>, DomainEntityValidator<DomainModel.Task>>();
+            }
+
             config.DependencyResolver = new UnityResolver(container);
 
             // Replacing the log service with a mocked one

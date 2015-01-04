@@ -65,7 +65,7 @@ namespace Tasks.DataAccess.Tests
             var allTasks = repository.GetAll();
 
             // Assert
-            allTasks.ShouldAllBeEquivalentTo(_tasks, "because the GetAll() method should return all the tasks in the repository's collection");
+            allTasks.ShouldAllBeEquivalentTo(_tasks.Values, "because the GetAll() method should return all the tasks in the repository's collection");
         }
 
         [TestMethod]
@@ -122,7 +122,7 @@ namespace Tasks.DataAccess.Tests
         {
             // Arrange
             var taskToDelete = new DomainModel.Task() { 
-                ID = _tasks[0].ID 
+                ID = _tasks.First().Value.ID 
             };
 
             // Act
@@ -137,7 +137,7 @@ namespace Tasks.DataAccess.Tests
         public void Delete_EntityNotInTheRepository_ShouldLeaveTheCollectionUntouched()
         {
             // Arrange
-            var originalCollection = _tasks.ToArray();
+            var originalCollection = _tasks.Values.ToArray();
             var taskToDelete = new DomainModel.Task()
             {
                 ID = 1000
@@ -148,17 +148,18 @@ namespace Tasks.DataAccess.Tests
             repository.Delete(taskToDelete);
 
             // Assert
-            _tasks.ShouldAllBeEquivalentTo(originalCollection, "because the collection should not has been changed");
+            _tasks.Values.ToArray().ShouldAllBeEquivalentTo(originalCollection, "because the collection should not has been changed");
         }
 
         [TestMethod]
         public void Update_EntityAlreadyInTheRepository_ShouldUpdateTheEntityInTheCollection()
         {
             // Arrange
-            var taskToUpdate = new DomainModel.Task() { 
-                ID = _tasks[0].ID,
-                Created = _tasks[0].Created,
-                Creator = _tasks[0].Creator, 
+            var taskInCollection = _tasks.First().Value;
+            var taskToUpdate = new DomainModel.Task() {
+                ID = taskInCollection.ID,
+                Created = taskInCollection.Created,
+                Creator = taskInCollection.Creator, 
                 Description = "This is a new description", 
                 Title = "This is a new title", 
                 Status = DomainModel.TaskStatus.InTest, 
@@ -170,8 +171,7 @@ namespace Tasks.DataAccess.Tests
             repository.Update(taskToUpdate);
 
             // Assert
-            var entityInCollection = _tasks[taskToUpdate.ID];
-            entityInCollection.Should().NotBeNull("because the entity should be in the collection").And.ShouldBeEquivalentTo(taskToUpdate, opt => opt.ExcludingMissingProperties(), "because the update should update all the properties in the entity");
+            taskInCollection.Should().NotBeNull("because the entity should be in the collection").And.ShouldBeEquivalentTo(taskToUpdate, opt => opt.ExcludingMissingProperties(), "because the update should update all the properties in the entity");
         }
 
         [TestMethod]
@@ -202,7 +202,7 @@ namespace Tasks.DataAccess.Tests
         public void FindById_TheIdIsRelatedToAnEntityAlreadyInTheRepository_ShouldReturnTheCorrectEntity()
         {
             // Arrange
-            var taskToSearch = _tasks[0];
+            var taskToSearch = _tasks.First().Value;
 
             // Act
             var repository = new TasksRepository(_tasks);

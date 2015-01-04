@@ -63,6 +63,7 @@
   <ItemGroup>
     <Compile Include="TasksServiceTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TaskValidatorTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Tasks.DataAccess\Tasks.DataAccess.csproj">

@@ -4,17 +4,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Tasks.DataAccess;
+using Tasks.Infrastructure.Validators;
 
 namespace Tasks.Infrastructure.Tasks
 {
     public class TasksService : ITasksService
     {
         private IEntityRepository<DomainModel.Task> _taskRepository;
+        private IDomainEntityValidator<DomainModel.Task> _validator;
 
-
-        public TasksService(IEntityRepository<DomainModel.Task> taskRepository)
+        public TasksService(IEntityRepository<DomainModel.Task> taskRepository, IDomainEntityValidator<DomainModel.Task> validator)
         {
             _taskRepository = taskRepository;
+            _validator = validator;
         }
 
         public IEnumerable<DomainModel.Task> GetAll()
@@ -34,7 +36,14 @@ namespace Tasks.Infrastructure.Tasks
 
         public DomainModel.Task Add(DomainModel.Task task)
         {
-            return null;
+            // Validate the entity
+            if( !_validator.Validate(task) )
+            {
+                throw new InvalidEntityException<DomainModel.Task>();
+            }
+
+            _taskRepository.Add(task);
+            return task;
         }
 
         public DomainModel.Task Update(DomainModel.Task task)
