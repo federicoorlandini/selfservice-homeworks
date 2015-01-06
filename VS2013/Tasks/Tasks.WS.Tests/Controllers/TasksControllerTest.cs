@@ -101,7 +101,7 @@ namespace Tasks.WS.Tests.Controllers
 
             // Preparing the in-memory test
             var client = ConfigureInMemoryTest(tasksRepository: mockedRepository.Object);
-            var url = string.Format("http://localhost/tasks/status/{0}", (int)taskStatus);
+            var url = string.Format("http://localhost/v1/tasks/status/{0}", (int)taskStatus);
 
             // Act
             var response = client.GetAsync(url).Result;
@@ -195,7 +195,7 @@ namespace Tasks.WS.Tests.Controllers
             var client = ConfigureInMemoryTest(tasksService: _mockedTasksService.Object);
 
             // Action
-            var response = client.PostAsJsonAsync("http://localhost/tasks", newTaskToAdd).Result;
+            var response = client.PostAsJsonAsync("http://localhost/v1/tasks", newTaskToAdd).Result;
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.Created, "because should return a created code");

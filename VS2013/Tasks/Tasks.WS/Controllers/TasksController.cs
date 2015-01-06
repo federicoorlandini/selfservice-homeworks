@@ -11,7 +11,7 @@ using AutoMapper;
 
 namespace Tasks.WS.Controllers
 {
-    [RoutePrefix("tasks")]
+    [RoutePrefix("v1/tasks")]
     public class TasksController : ApiController
     {
         private ITasksService _tasksService;
@@ -44,7 +44,7 @@ namespace Tasks.WS.Controllers
         }
         
         [HttpGet]
-        [Route("{taskID}", Name="GetTaskById")]
+        [Route("{taskID:int}", Name="GetTaskById")]
         public IHttpActionResult GetTask(int taskID)
         {
             var task = _tasksService.FindById(taskID);
@@ -84,7 +84,7 @@ namespace Tasks.WS.Controllers
         }
 
         [HttpPut]
-        [Route("{taskID}", Name="UpdateTask")]
+        [Route("{taskID:int}", Name="UpdateTask")]
         public IHttpActionResult Update(int taskID, UpdateTask model)
         {
             try
@@ -113,7 +113,7 @@ namespace Tasks.WS.Controllers
         }
 
         [HttpDelete]
-        [Route("{taskID}")]
+        [Route("{taskID:int}")]
         public IHttpActionResult Delete(int taskID)
         {
             try
