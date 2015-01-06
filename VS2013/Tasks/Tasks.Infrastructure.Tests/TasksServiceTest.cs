@@ -7,14 +7,17 @@ using FluentAssertions;
 using Tasks.Infrastructure.Tasks;
 using Tasks.Infrastructure.Validators;
 using System.Linq;
+using Tasks.Infrastructure.Notifications;
+using Tasks.DataAccess.Tasks;
 
 namespace Tasks.Infrastructure.Tests
 {
     [TestClass]
     public class TasksServiceTest
     {
-        private Mock<IEntityRepository<DomainModel.Task>> _mockRepository;
+        private Mock<ITaskRepository> _mockRepository;
         private Mock<IDomainEntityValidator<DomainModel.Task>> _mockValidator;
+        private Mock<INotificationSender> _mockNotificationSender;
 
         private DomainModel.User _creatorUser;
         private DateTime _createdDateTime;
@@ -23,8 +26,9 @@ namespace Tasks.Infrastructure.Tests
         [TestInitialize]
         public void TestInitialize()
         {
-            _mockRepository = new Mock<IEntityRepository<DomainModel.Task>>();
+            _mockRepository = new Mock<ITaskRepository>();
             _mockValidator = new Mock<IDomainEntityValidator<DomainModel.Task>>();
+            _mockNotificationSender = new Mock<INotificationSender>();
 
             _creatorUser = new DomainModel.User { UserID = 1, Username = "federico.orlandini" };
             _createdDateTime = new DateTime(2014, 12, 25);
@@ -69,7 +73,7 @@ namespace Tasks.Infrastructure.Tests
             _mockRepository.Setup(m => m.GetAll()).Returns(_tasksCollection.Values);
 
             // Act
-            var service =  new TasksService(_mockRepository.Object, _mockValidator.Object);
+            var service =  new TasksService(_mockRepository.Object, _mockValidator.Object, _mockNotificationSender.Object);
             var result = service.GetAll();
 
             // Assert
@@ -105,7 +109,7 @@ namespace Tasks.Infrastructure.Tests
             _mockRepository.Setup(m => m.GetAll(status)).Returns(inProgressTasksCollection);
 
             // Act
-            var service = new TasksService(_mockRepository.Object, _mockValidator.Object);
+            var service = new TasksService(_mockRepository.Object, _mockValidator.Object, _mockNotificationSender.Object);
             var result = service.GetAll(status);
 
             // Assert
@@ -120,7 +124,7 @@ namespace Tasks.Infrastructure.Tests
             _mockRepository.Setup(m => m.FindById(taskToFind.ID)).Returns(taskToFind);
 
             // Act
-            var service = new TasksService(_mockRepository.Object, _mockValidator.Object);
+            var service = new TasksService(_mockRepository.Object, _mockValidator.Object, _mockNotificationSender.Object);
             var result = service.FindById(taskToFind.ID);
 
             // Assert
@@ -137,7 +141,7 @@ namespace Tasks.Infrastructure.Tests
             _mockRepository.Setup(m => m.FindById(taskToFindId)).Returns<DomainModel.Task>(null);
 
             // Act
-            var service = new TasksService(_mockRepository.Object, _mockValidator.Object);
+            var service = new TasksService(_mockRepository.Object, _mockValidator.Object, _mockNotificationSender.Object);
             var result = service.FindById(taskToFindId);
 
             // Assert
@@ -154,7 +158,7 @@ namespace Tasks.Infrastructure.Tests
             _mockRepository.Setup(m => m.Add(taskToBeAdded)).Verifiable();
 
             // Act
-            var service = new TasksService(_mockRepository.Object, _mockValidator.Object);
+            var service = new TasksService(_mockRepository.Object, _mockValidator.Object, _mockNotificationSender.Object);
             service.Add(taskToBeAdded);
 
             // Assert
@@ -170,7 +174,7 @@ namespace Tasks.Infrastructure.Tests
             _mockValidator.Setup(m => m.Validate(taskToBeAdded)).Returns(false);
 
             // Act
-            var service = new TasksService(_mockRepository.Object, _mockValidator.Object);
+            var service = new TasksService(_mockRepository.Object, _mockValidator.Object, _mockNotificationSender.Object);
             service.Add(taskToBeAdded);
 
             // Assert
@@ -180,51 +184,147 @@ namespace Tasks.Infrastructure.Tests
         [TestMethod]
         public void Update_ValidEntity_ShouldUpdateTheEntityInTheRepository()
         {
-            throw new NotImplementedException();
+            // Arrange
+            var taskToBeUpdated = _tasksCollection.First().Value;
+            _mockValidator.Setup(m => m.Validate(taskToBeUpdated)).Returns(true);
+            _mockRepository.Setup(m => m.Update(taskToBeUpdated)).Verifiable();
+
+            // Act
+            var service = new TasksService(_mockRepository.Object, _mockValidator.Object, _mockNotificationSender.Object);
+            service.Update(taskToBeUpdated);
+
+            // Assert
+            _mockValidator.VerifyAll();
+            _mockRepository.VerifyAll();
         }
 
         [TestMethod]
         public void Update_ValidEntity_ShouldSendTheNotificationsToAllTheWatchers()
         {
-            throw new NotImplementedException();
+            // Arrange
+            var taskToBeUpdated = _tasksCollection.First().Value;
+            var watcher1 = new DomainModel.User() { UserID = 10, EmailAddress = "federico.orlandini@gmail.com", Username = "federico.orlandini" };
+            var watcher2 = new DomainModel.User() { UserID = 11, EmailAddress = "bill.gates@gmail.com", Username = "bill.gates" };
+            var watcherUsers = new List<DomainModel.User>() { watcher1, watcher2 };
+
+            _mockValidator.Setup(m => m.Validate(taskToBeUpdated)).Returns(true);
+            _mockRepository.Setup(m => m.FindById(taskToBeUpdated.ID)).Returns(taskToBeUpdated);
+            _mockRepository.Setup(m => m.GetWatcherUsersForTask(taskToBeUpdated.ID)).Returns(watcherUsers);
+            _mockNotificationSender.Setup(m => m.SendUpdateTaskNotification(watcher1, taskToBeUpdated)).Verifiable();
+            _mockNotificationSender.Setup(m => m.SendUpdateTaskNotification(watcher2, taskToBeUpdated)).Verifiable();
+
+            // Act
+            var service = new TasksService(_mockRepository.Object, _mockValidator.Object, _mockNotificationSender.Object);
+            service.Update(taskToBeUpdated);
+
+            // Assert
+            _mockNotificationSender.VerifyAll();
         }
 
         [TestMethod]
         [ExpectedException(typeof(InvalidEntityException<DomainModel.Task>))]
         public void Update_NotValidEntity_ShouldThrowAnInvalidEntityException()
         {
-            throw new NotImplementedException();
+            // Arrange
+            var taskToBeUpdated = _tasksCollection.First().Value;
+            _mockValidator.Setup(m => m.Validate(taskToBeUpdated)).Returns(false);
+
+            // Act
+            var service = new TasksService(_mockRepository.Object, _mockValidator.Object, _mockNotificationSender.Object);
+            service.Update(taskToBeUpdated);
+
+            // Assert
+            Assert.Fail("Shoud not reach this line of code");
         }
 
         [TestMethod]
         [ExpectedException(typeof(InvalidEntityException<DomainModel.Task>))]
         public void Update_NotValidEntity_ShouldNotSendTheNotificationsToTheWatchers()
         {
-            throw new NotImplementedException();
+            // Arrange
+            var taskToBeUpdated = _tasksCollection.First().Value;
+
+            _mockValidator.Setup(m => m.Validate(taskToBeUpdated)).Returns(false);
+            
+            // Act
+            var service = new TasksService(_mockRepository.Object, _mockValidator.Object, _mockNotificationSender.Object);
+            service.Update(taskToBeUpdated);
+
+            // Assert
+            _mockRepository.Verify(m => m.Update(taskToBeUpdated), Times.Never());
         }
 
         [TestMethod]
         public void Delete_ExistingEntity_ShouldDeleteTheEntityFromTheRepository()
         {
-            throw new NotImplementedException();
+            // Arrange
+            var taskToBeDeleted = _tasksCollection.First().Value;
+            _mockRepository.Setup(m => m.FindById(taskToBeDeleted.ID)).Returns(taskToBeDeleted);
+            _mockRepository.Setup(m => m.Delete(taskToBeDeleted.ID)).Verifiable();
+
+            // Act
+            var service = new TasksService(_mockRepository.Object, _mockValidator.Object, _mockNotificationSender.Object);
+            service.Delete(taskToBeDeleted.ID);
+
+            // Assert
+            _mockRepository.VerifyAll();
         }
 
         [TestMethod]
-        public void Delete_ExistingEntity_ShouldShouldSendTheNotificationsToAllTheWatchers()
+        public void Delete_ExistingEntity_ShouldSendTheNotificationsToAllTheWatchers()
         {
-            throw new NotImplementedException();
+            // Arrange
+            var taskToBeDeleted = _tasksCollection.First().Value;
+            var watcher1 = new DomainModel.User() { UserID = 10, EmailAddress = "federico.orlandini@gmail.com", Username = "federico.orlandini" };
+            var watcher2 = new DomainModel.User() { UserID = 11, EmailAddress = "bill.gates@gmail.com", Username = "bill.gates" };
+            var watcherUsers = new List<DomainModel.User>() { watcher1, watcher2 };
+
+            _mockRepository.Setup(m => m.FindById(taskToBeDeleted.ID)).Returns(taskToBeDeleted);
+            _mockRepository.Setup(m => m.GetWatcherUsersForTask(taskToBeDeleted.ID)).Returns(watcherUsers);
+            _mockNotificationSender.Setup(m => m.SendDeleteTaskNotification(watcher1, taskToBeDeleted)).Verifiable();
+            _mockNotificationSender.Setup(m => m.SendDeleteTaskNotification(watcher2, taskToBeDeleted)).Verifiable();
+
+            // Act
+            var service = new TasksService(_mockRepository.Object, _mockValidator.Object, _mockNotificationSender.Object);
+            service.Delete(taskToBeDeleted.ID);
+
+            // Assert
+            _mockNotificationSender.VerifyAll();
         }
 
         [TestMethod]
-        public void Delete_NotExistingEntity_ShouldLeaveUnchangedTheEntitiesInTheRepository()
+        public void Delete_NotExistingEntity_ShouldNotCallTheDeleteMethodInTheRepository()
         {
-            throw new NotImplementedException();
+            // Arrange
+            var unexistingTaskId = 1000;
+
+            // Act
+            var service = new TasksService(_mockRepository.Object, _mockValidator.Object, _mockNotificationSender.Object);
+            service.Delete(unexistingTaskId);
+
+            // Assert
+            _mockRepository.Verify(m => m.Delete(unexistingTaskId), Times.Never());
         }
 
         [TestMethod]
         public void Delete_NotExistingEntity_ShouldNotSendNotifications()
         {
-            throw new NotImplementedException();
+            // Arrange
+            var taskToBeDeleted = _tasksCollection.First().Value;
+            var watcher1 = new DomainModel.User() { UserID = 10, EmailAddress = "federico.orlandini@gmail.com", Username = "federico.orlandini" };
+            var watcher2 = new DomainModel.User() { UserID = 11, EmailAddress = "bill.gates@gmail.com", Username = "bill.gates" };
+            var watcherUsers = new List<DomainModel.User>() { watcher1, watcher2 };
+
+            _mockRepository.Setup(m => m.GetWatcherUsersForTask(taskToBeDeleted.ID)).Returns(watcherUsers);
+            _mockNotificationSender.Setup(m => m.SendDeleteTaskNotification(watcher1, taskToBeDeleted)).Verifiable();
+            _mockNotificationSender.Setup(m => m.SendDeleteTaskNotification(watcher2, taskToBeDeleted)).Verifiable();
+
+            // Act
+            var service = new TasksService(_mockRepository.Object, _mockValidator.Object, _mockNotificationSender.Object);
+            service.Delete(taskToBeDeleted.ID);
+
+            // Assert
+            _mockNotificationSender.Verify(m => m.SendDeleteTaskNotification(It.IsAny<DomainModel.User>(), It.IsAny<DomainModel.Task>()), Times.Never());
         }
     }
 }

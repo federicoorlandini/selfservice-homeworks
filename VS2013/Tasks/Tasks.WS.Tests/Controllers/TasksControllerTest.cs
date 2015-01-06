@@ -19,6 +19,9 @@ using Newtonsoft.Json;
 using System.Net;
 using System.Web.Http.ExceptionHandling;
 using Tasks.Infrastructure.Validators;
+using Tasks.DataAccess.Tasks;
+using Tasks.Infrastructure.Notifications;
+using Tasks.DataAccess.Caching;
 
 namespace Tasks.WS.Tests.Controllers
 {
@@ -93,7 +96,7 @@ namespace Tasks.WS.Tests.Controllers
         {
             // The mocked Task Repository
             var taskStatus = DomainModel.TaskStatus.NotStarted;
-            var mockedRepository = new Mock<IEntityRepository<DomainModel.Task>>();
+            var mockedRepository = new Mock<ITaskRepository>();
             mockedRepository.Setup(m => m.GetAll(taskStatus)).Returns(_tasksCollection);
 
             // Preparing the in-memory test
@@ -299,7 +302,11 @@ namespace Tasks.WS.Tests.Controllers
         /// <param name="tasksService"></param>
         /// <param name="tasksRepository"></param>
         /// <returns></returns>
-        private HttpClient ConfigureInMemoryTest(ITasksService tasksService = null, IEntityRepository<DomainModel.Task> tasksRepository = null, IDomainEntityValidator<DomainModel.Task> taskValidator = null)
+        private HttpClient ConfigureInMemoryTest(ITasksService tasksService = null, 
+            ITaskRepository tasksRepository = null, 
+            IDomainEntityValidator<DomainModel.Task> taskValidator = null, 
+            INotificationSender notificationSender = null, 
+            ICacheProvider cache = null)
         {
             var config = new HttpConfiguration();
             WebApiConfig.Register(config);
@@ -308,7 +315,7 @@ namespace Tasks.WS.Tests.Controllers
             var container = new UnityContainer();
             if( tasksRepository != null)
             {
-                container.RegisterInstance<IEntityRepository<DomainModel.Task>>(tasksRepository);
+                container.RegisterInstance<ITaskRepository>(tasksRepository);
             }
             
             if( tasksService == null )
@@ -327,6 +334,24 @@ namespace Tasks.WS.Tests.Controllers
             else
             {
                 container.RegisterType<IDomainEntityValidator<DomainModel.Task>, DomainEntityValidator<DomainModel.Task>>();
+            }
+
+            if( notificationSender != null )
+            {
+                container.RegisterInstance<INotificationSender>(notificationSender);
+            }
+            else
+            {
+                container.RegisterType<INotificationSender, EmailNotificationSender>();
+            }
+
+            if( cache != null )
+            {
+                container.RegisterInstance<ICacheProvider>(cache);
+            }
+            else
+            {
+                container.RegisterType<ICacheProvider, CacheProvider>();
             }
 
             config.DependencyResolver = new UnityResolver(container);

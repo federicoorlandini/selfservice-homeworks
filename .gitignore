@@ -20,3 +20,8 @@ VS2013/Tasks/Tasks.Infrastructure.Interfaces/obj/
 VS2013/Tasks/Tasks.DataAccess/obj/
 TODO List.txt
 functionality.txt
+VS2013/Tasks/Tasks.DataAccess.Tests/bin/
+VS2013/Tasks/Tasks.DataAccess.Tests/obj/
+VS2013/Tasks/Tasks.DataAccess/bin/
+VS2013/Tasks/Tasks.Infrastructure/bin/
+VS2013/Tasks/Tasks.DomainModel/bin/

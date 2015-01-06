@@ -11,13 +11,16 @@ namespace Tasks.DomainModel
     {
         [Required]
         public string Title { get; set; }
+
         public string Description { get; set; }
 
         public TaskStatus Status { get; set; }
 
+        [Range(0, int.MaxValue)]
         public int EstimatedHours { get; set; }
 
         public IEnumerable<WorkSession> WorkSessions { get; set; }
+
         public IEnumerable<TaskComment> Comments { get; set; }
 
         /// <summary>
@@ -30,7 +33,7 @@ namespace Tasks.DomainModel
             }
         }
 
-        public IEnumerable<User> WatcherUsers
+        public ICollection<User> WatcherUsers
         {
             get;
             set;

@@ -46,6 +46,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Notifications\EmailNotificationSender.cs" />
+    <Compile Include="Notifications\INotificationSender.cs" />
     <Compile Include="Validators\DomainEntityValidator.cs" />
     <Compile Include="InvalidEntityException.cs" />
     <Compile Include="NotFoundEntityException.cs" />
