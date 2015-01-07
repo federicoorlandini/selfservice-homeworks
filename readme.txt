@@ -42,6 +42,6 @@ The implemented way to create the keys for the items in the cache should be refa
 I implemented a simple loggin system to log the unhandled exception. For this logging system I used the Log4Net library and I configure it to write the log messages in a text file. (See Tasks.WS.Log4NetExceptionLogger)
 
 ***** TO BE DEVELOPER/INTEGRATED
-- add other controller to manage the comment to the tasks and to log the work session
+- add other controller to manage the comment to the tasks and to log the work session ( I started developing these but I had to rollback because no enough time left)
 - security using signed token: we can use a WebAPI HttpMessageHandler implementation to be able to check if a Http request contains a valid signed token and to extract all the information from the token (the user that is sending the request, for example);
 - use of the async pattern: to increase scalability we can use the .NET async/await features in this code.
