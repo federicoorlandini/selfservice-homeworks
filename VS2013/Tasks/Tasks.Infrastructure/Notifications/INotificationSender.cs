@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Tasks.Infrastructure.Notifications
 {
+    /// <summary>
+    /// The interface for the class that sends the notification to the watcher users of a task
+    /// </summary>
     public interface INotificationSender
     {
         void SendUpdateTaskNotification(DomainModel.User recipient, DomainModel.Task task);

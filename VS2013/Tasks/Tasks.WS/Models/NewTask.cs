@@ -13,6 +13,5 @@ namespace Tasks.WS.Models
         public string Description { get; set; }
 
         public int EstimatedHours { get; set; }
-        public int RemainingdHours { get; set; }
     }
 }

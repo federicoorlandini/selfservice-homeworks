@@ -16,6 +16,7 @@ namespace Tasks.WS.Controllers
     {
         private ITasksService _tasksService;
 
+        private int _currentUserId;
 
         public TasksController(ITasksService tasksService)
         {
@@ -24,6 +25,10 @@ namespace Tasks.WS.Controllers
             // Automapper configuration
             AutoMapper.Mapper.CreateMap<Models.NewTask, DomainModel.Task>();
             AutoMapper.Mapper.CreateMap<Models.UpdateTask, DomainModel.Task>();
+
+            // We are simulating the current user. The Current User ID should be retrieved using 
+            // the valid security token (to be implemented) that should be present in the HTTP request
+            _currentUserId = 1;
         }
 
         [HttpGet]
@@ -34,6 +39,11 @@ namespace Tasks.WS.Controllers
             return Ok(tasksCollection);
         }
 
+        /// <summary>
+        /// Returns all the tasks entities in a particular status
+        /// </summary>
+        /// <param name="status"></param>
+        /// <returns></returns>
         [HttpGet]
         [Route("status/{status}", Name="GetAllTaskFilteredByStatus")]
         public HttpResponseMessage GetAllTasks(DomainModel.TaskStatus status)
@@ -67,6 +77,7 @@ namespace Tasks.WS.Controllers
                 if( ModelState.IsValid)
                 {
                     var newTask = Mapper.Map<Models.NewTask, DomainModel.Task>(model);
+                    newTask.CreatorUserId = _currentUserId;
                     newTask = _tasksService.Add(newTask);
                     string location = Url.Link("GetTaskById", new { taskID = newTask.ID });
                     return Created(location, newTask);

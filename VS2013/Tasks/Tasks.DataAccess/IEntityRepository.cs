@@ -11,7 +11,7 @@ namespace Tasks.DataAccess
     {
         IEnumerable<T> GetAll();
         IEnumerable<T> GetAll(DomainModel.TaskStatus status);
-        void Add(T entity);
+        T Add(T entity);
         void Delete(int entityId);
         void Update(T entity);
         T FindById(int entityId);

@@ -158,7 +158,7 @@ namespace Tasks.DataAccess.Tests
             // Arrange
             var cacheKey = TasksRepository.GetAllCacheKeyPatter;
             _mockCache.Setup(m => m.Get<IEnumerable<DomainModel.Task>>(cacheKey)).Returns<IEnumerable<DomainModel.Task>>(null);
-            _mockCache.Setup(m => m.Set<IEnumerable<DomainModel.Task>>(_tasks.Values, cacheKey)).Verifiable();
+            _mockCache.Setup(m => m.Set(_tasks.Values, cacheKey)).Verifiable();
 
             // Act
             var repository = new TasksRepository(_tasks, _mockCache.Object);
@@ -244,7 +244,7 @@ namespace Tasks.DataAccess.Tests
             var cacheKey = string.Format(TasksRepository.GetAllWithStatusCacheKeyPatter, (int)taskStatus);
             _mockCache.Setup(m => m.Get<IEnumerable<DomainModel.Task>>(cacheKey)).Returns<IEnumerable<DomainModel.Task>>(null);
             var filteredTasks = _tasks.Values.Where(t => t.Status == taskStatus);
-            _mockCache.Setup(m => m.Set<IEnumerable<DomainModel.Task>>(filteredTasks, cacheKey)).Verifiable();
+            _mockCache.Setup(m => m.Set(filteredTasks, cacheKey)).Verifiable();
 
             // Act
             var repository = new TasksRepository(_tasks, _mockCache.Object);
@@ -280,7 +280,7 @@ namespace Tasks.DataAccess.Tests
             {
                 Title = "A task to add"
             };
-            _mockCache.Setup(m => m.Set<DomainModel.Task>(taskToAdd, cacheKey)).Verifiable();
+            _mockCache.Setup(m => m.Set(taskToAdd, cacheKey)).Verifiable();
 
             // Act
             var repository = new TasksRepository(_tasks, _mockCache.Object);
@@ -407,7 +407,7 @@ namespace Tasks.DataAccess.Tests
 
             // Assert
             var cacheKey = string.Format(TasksRepository.SingleEntityCacheKeyPatter, taskToUpdate.ID);
-            _mockCache.Verify(m => m.Set<DomainModel.Task>(taskToUpdate, cacheKey));
+            _mockCache.Verify(m => m.Set(taskToUpdate, cacheKey));
         }
 
         [TestMethod]
@@ -447,7 +447,7 @@ namespace Tasks.DataAccess.Tests
 
             // Assert
             var cacheKey = string.Format(TasksRepository.SingleEntityCacheKeyPatter, taskToUpdate.ID);
-            _mockCache.Verify(m => m.Set<DomainModel.Task>(taskToUpdate, cacheKey), Times.Never());
+            _mockCache.Verify(m => m.Set(taskToUpdate, cacheKey), Times.Never());
         }
 
         [TestMethod]

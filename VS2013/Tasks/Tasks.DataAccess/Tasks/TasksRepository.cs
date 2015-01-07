@@ -49,7 +49,7 @@ namespace Tasks.DataAccess.Tasks
 
             // Not found in cache
             var collection = _tasksCollection.Values;
-            _cache.Set <IEnumerable<DomainModel.Task>>(collection, cacheKey);
+            _cache.Set(collection, cacheKey);
             return collection;
         }
 
@@ -70,20 +70,23 @@ namespace Tasks.DataAccess.Tasks
 
             // Not found in cache
             var collection = _tasksCollection.Where(t => t.Value.Status == status).Select(t => t.Value);
-            _cache.Set<IEnumerable<DomainModel.Task>>(collection, cacheKey);
+            _cache.Set(collection, cacheKey);
             return collection;
         }
 
-        public void Add(DomainModel.Task entity)
+        public DomainModel.Task Add(DomainModel.Task entity)
         {
             // This is a very simple way to generate the new ID. This should be provided by the database
-            var newID = _tasksCollection.Values.Max(t => t.ID) + 1;
+            var newID = GetNextID();
             entity.ID = newID;
+            entity.Created = DateTime.Now;
             _tasksCollection[newID] = entity;
 
             // Update the cache
             var cacheKey = string.Format(SingleEntityCacheKeyPatter, entity.ID);
-            _cache.Set<DomainModel.Task>(entity, cacheKey);
+            _cache.Set(entity, cacheKey);
+
+            return entity;
         }
 
         public void Delete(int entityId)
@@ -109,7 +112,7 @@ namespace Tasks.DataAccess.Tasks
 
                 // Update the cache
                 var cacheKey = string.Format(SingleEntityCacheKeyPatter, entity.ID);
-                _cache.Set<DomainModel.Task>(entity, cacheKey);
+                _cache.Set(entity, cacheKey);
             }
         }
 
@@ -139,5 +142,12 @@ namespace Tasks.DataAccess.Tasks
             // This is a dummy implementation
             return new List<DomainModel.User>();
         }
+
+        #region Helper Methods
+        private int GetNextID()
+        {
+            return (_tasksCollection.Any() ? _tasksCollection.Values.Max(t => t.ID) + 1 : 1);
+        }
+        #endregion
     }
 }

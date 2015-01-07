@@ -29,17 +29,11 @@ namespace Tasks.WS
 
             config.DependencyResolver = new UnityResolver(container);
 
-            // enable elmah
+            // We use our custom log class to log the unhandle exceptions
             config.Services.Add(typeof(IExceptionLogger), new Log4NetExceptionLogger());
 
             // Web API routes
             config.MapHttpAttributeRoutes();
-
-            config.Routes.MapHttpRoute(
-                name: "DefaultApi",
-                routeTemplate: "api/{controller}/{id}",
-                defaults: new { id = RouteParameter.Optional }
-            );
         }
     }
 }

@@ -10,6 +10,9 @@ namespace Tasks.DomainModel
     {
         public int ID { get; set; }
         public DateTime Created { get; set; }
+        
+        // The ID of the creator user is usefull to be able to assign the creator user without retriving the entire User entity from the database
+        public int CreatorUserId { get; set; }
 
         public User Creator { get; set; }
     }

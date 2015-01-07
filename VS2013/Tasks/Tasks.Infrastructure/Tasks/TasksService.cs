@@ -46,7 +46,7 @@ namespace Tasks.Infrastructure.Tasks
                 throw new InvalidEntityException<DomainModel.Task>();
             }
 
-            _taskRepository.Add(task);
+            task = _taskRepository.Add(task);
             return task;
         }
 

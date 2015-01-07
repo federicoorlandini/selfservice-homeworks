@@ -9,23 +9,30 @@ namespace Tasks.DataAccess.Caching
     /// <summary>
     /// This is the interface to handle the cache.
     /// In a real application, we can use different caching system like Redis.
-    /// In this case, I used a single in-memory cache system
+    /// In this case, I used a single in-memory cache system.
+    /// We can improve this implementation adding an expiring time for every cache entry.
     /// </summary>
     public class CacheProvider : ICacheProvider
     {
-        public T Get<T>(string key)
+        private IDictionary<string, object> _cache = new Dictionary<string, object>();
+
+        public T Get<T>(string key) where T : class
         {
-            throw new NotImplementedException();
+            if( _cache.ContainsKey(key) )
+            {
+                return _cache[key] as T;
+            }
+            return null;
         }
 
-        public void Set<T>(T value, string key)
+        public void Set(object value, string key)
         {
-            throw new NotImplementedException();
+            _cache[key] = value;
         }
 
         public void Invalidate(string key)
         {
-            throw new NotImplementedException();
+            _cache.Remove(key);
         }
     }
 }

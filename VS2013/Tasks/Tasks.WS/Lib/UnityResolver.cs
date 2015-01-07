@@ -7,6 +7,9 @@ using System.Web.Http.Dependencies;
 
 namespace Tasks.WS.Lib
 {
+    /// <summary>
+    /// This is our custom implementation for a WebAPI Dependency Resolver that uses the Unity IoC container
+    /// </summary>
     public class UnityResolver : IDependencyResolver
     {
         protected IUnityContainer _container;

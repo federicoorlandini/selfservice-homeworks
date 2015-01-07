@@ -8,11 +8,11 @@ using System.Web.Http;
 namespace Tasks.WS.Controllers
 {
     [RoutePrefix("v1/tasks/comments")]
-    public class TaskCommentsController : ApiController
+    public class LogWorksController : ApiController
     {
         [HttpGet]
-        [Route("")]
-        public IEnumerable<string> Get()
+        [Route("~/v1/tasks/{taskId:int}/comments")]
+        public IHttpActionResult GetAllCommentsForTask(int taskId)
         {
             throw new NotImplementedException();
         }
@@ -20,25 +20,25 @@ namespace Tasks.WS.Controllers
         // GET api/values/5
         [HttpGet]
         [Route("{id:int}")]
-        public string Get(int id)
+        public IHttpActionResult Get(int id)
         {
             throw new NotImplementedException();
         }
 
         // POST api/values
-        public void Post([FromBody]string value)
+        public IHttpActionResult Post([FromBody]string value)
         {
             throw new NotImplementedException();
         }
 
         // PUT api/values/5
-        public void Put(int id, [FromBody]string value)
+        public IHttpActionResult Put(int id, [FromBody]string value)
         {
             throw new NotImplementedException();
         }
 
         // DELETE api/values/5
-        public void Delete(int id)
+        public IHttpActionResult Delete(int id)
         {
             throw new NotImplementedException();
         }

@@ -26,21 +26,21 @@ using Tasks.DataAccess.Caching;
 namespace Tasks.WS.Tests.Controllers
 {
     [TestClass]
-    public class TasksControllerTest
+    public class TasksControllerTest : ControllerTestBase
     {
         private Mock<ITasksService> _mockedTasksService;
-        private Mock<IExceptionLogger> _mockedExceptionLogger;
 
         private DomainModel.User _creatorUser;
         private DateTime _createdDateTime;
         private List<DomainModel.Task> _tasksCollection;
 
         [TestInitialize]
-        public void TestInitialize()
+        public override void TestInitialize()
         {
-            _mockedTasksService = new Mock<ITasksService>();
-            _mockedExceptionLogger = new Mock<IExceptionLogger>();
+            base.TestInitialize();
 
+            _mockedTasksService = new Mock<ITasksService>();
+            
             _creatorUser = new DomainModel.User { UserID = 1, Username = "federico.orlandini" };
             _createdDateTime = new DateTime(2014, 12, 25);
 
@@ -153,8 +153,7 @@ namespace Tasks.WS.Tests.Controllers
             var newTaskToAdd = new Models.NewTask {
                 Description = "This is a new task", 
                 Title = string.Empty, 
-                EstimatedHours = 1, 
-                RemainingdHours = 2
+                EstimatedHours = 1
             };
 
             _mockedTasksService.Setup(m => m.Add(It.IsAny<DomainModel.Task>())).Throws<InvalidEntityException<DomainModel.Task>>();
@@ -176,8 +175,7 @@ namespace Tasks.WS.Tests.Controllers
             {
                 Description = "This is a new task",
                 Title = "This is the title for the new task",
-                EstimatedHours = 1,
-                RemainingdHours = 2
+                EstimatedHours = 1
             };
 
             var taskAdded = new DomainModel.Task() {
@@ -294,75 +292,5 @@ namespace Tasks.WS.Tests.Controllers
             // Assert
             response.Should().NotBeNull("because should be of type NotFoundResult");
         }
-
-        #region Helper Methods
-        /// <summary>
-        /// This method onfigure the in-memory hosting for the integration tests
-        /// </summary>
-        /// <param name="tasksService"></param>
-        /// <param name="tasksRepository"></param>
-        /// <returns></returns>
-        private HttpClient ConfigureInMemoryTest(ITasksService tasksService = null, 
-            ITaskRepository tasksRepository = null, 
-            IDomainEntityValidator<DomainModel.Task> taskValidator = null, 
-            INotificationSender notificationSender = null, 
-            ICacheProvider cache = null)
-        {
-            var config = new HttpConfiguration();
-            WebApiConfig.Register(config);
-
-            // Overwriting the IoC configuration to inject the mocked repository
-            var container = new UnityContainer();
-            if( tasksRepository != null)
-            {
-                container.RegisterInstance<ITaskRepository>(tasksRepository);
-            }
-            
-            if( tasksService == null )
-            {
-                container.RegisterType<ITasksService, TasksService>();
-            }
-            else
-            {
-                container.RegisterInstance<ITasksService>(tasksService);
-            }
-            
-            if( taskValidator != null )
-            {
-                container.RegisterInstance<IDomainEntityValidator<DomainModel.Task>>(taskValidator);
-            }
-            else
-            {
-                container.RegisterType<IDomainEntityValidator<DomainModel.Task>, DomainEntityValidator<DomainModel.Task>>();
-            }
-
-            if( notificationSender != null )
-            {
-                container.RegisterInstance<INotificationSender>(notificationSender);
-            }
-            else
-            {
-                container.RegisterType<INotificationSender, EmailNotificationSender>();
-            }
-
-            if( cache != null )
-            {
-                container.RegisterInstance<ICacheProvider>(cache);
-            }
-            else
-            {
-                container.RegisterType<ICacheProvider, CacheProvider>();
-            }
-
-            config.DependencyResolver = new UnityResolver(container);
-
-            // Replacing the log service with a mocked one
-            config.Services.Replace(typeof(IExceptionLogger), _mockedExceptionLogger.Object);
-
-            var server = new HttpServer(config);
-            return new HttpClient(server);
-        }
-
-        #endregion
     }
 }

@@ -8,8 +8,8 @@ namespace Tasks.DataAccess.Caching
 {
     public interface ICacheProvider
     {
-        T Get<T>(string key);
-        void Set<T>(T value, string key);
+        T Get<T>(string key) where T : class;
+        void Set(object value, string key);
 
         void Invalidate(string key);
     }

@@ -7,6 +7,10 @@ using Tasks.DomainModel;
 
 namespace Tasks.Infrastructure
 {
+    /// <summary>
+    /// This exception is throwed when the required entity is not found
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class NotFoundEntityException<T> : Exception where T : IEntity
     {
         public NotFoundEntityException() : base() { }

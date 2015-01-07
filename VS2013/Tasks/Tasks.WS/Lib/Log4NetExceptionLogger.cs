@@ -10,6 +10,10 @@ using System.Web.Http.ExceptionHandling;
 
 namespace Tasks.WS.Lib
 {
+    /// <summary>
+    /// This class uses the Log4Net library to log all the unhandled exception information
+    /// in a text file (see the web.config for the Log4Net configuration)
+    /// </summary>
     public class Log4NetExceptionLogger : ExceptionLogger
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(Log4NetExceptionLogger));
